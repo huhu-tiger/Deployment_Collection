@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  kkfileview:
+    image: model.vnet.com/sjhl/kkfileview:4.1.0
+    container_name: kkfileview
+    restart: always
+    environment:
+      - KK_CONTEXT_PAT=/
+      - KK_BASE_URL=https://ai.vnet.com:21008
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime
+      - ./application.properties:/opt/kkFileView-4.1.0/config/application.properties
+    networks:
+      - kkfileview_network
+    ports:
+      - "8013:8012" # http
+
+  nginx-kkfileview-proxy:
+    image: model.vnet.com/zhongzi/nginx:1.21.6-alpine-perl
+    container_name: "nginx-kkfileview-proxy"
+    restart: always
+    privileged: true
+    environment:
+#      - LANG=zh_CN.UTF-8
+#      - LC_ALL=zh_CN.UTF-8
+      - TZ=Asia/Shanghai
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./vnet.com.crt:/etc/nginx/vnet.com.crt
+      - ./vnet.com.key:/etc/nginx/vnet.com.key
+
+    ports:
+      - "8012:443"                        #
+    networks:
+      - kkfileview_network
+
+networks:
+  kkfileview_network:
+    driver: bridge

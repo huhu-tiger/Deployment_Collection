@@ -1,0 +1,33 @@
+services:
+  mysql:
+    image:  model.vnet.com/zhongzi/mysql:8.0
+    privileged: true
+    platform: linux/amd64
+    container_name: zhongzi_mysql
+    environment:
+      LANG: 'C.UTF-8'  # 设置环境变量
+      MYSQL_ROOT_PASSWORD: vchat@QAZ
+      MYSQL_DATABASE: ai-reporter
+      MYSQL_USER: vchat_user
+      MYSQL_PASSWORD: vchat@QAZ
+      TZ: "Asia/Shanghai"
+    ports:
+      - "13306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./my.cnf:/etc/mysql/conf.d/my.cnf  # 挂载自定义的 my.cnf 文件
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    networks:
+      - mysql_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mysql_data:
+
+networks:
+  mysql_network:

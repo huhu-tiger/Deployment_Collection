@@ -1,0 +1,26 @@
+version: '3.3'
+services:
+  my_redis:
+      image: model.vnet.com/zhongzi/redis:6.2.6-alpine # 指定服务镜像，最好是与之前下载的redis配置文件保持一致
+      container_name: my_redis # 容器名称
+      restart: on-failure # 重启方式
+      environment:
+        - TZ=Asia/Shanghai # 设置时区
+
+      ports: # 映射端口
+        - "6379:6379"
+      sysctls: # 设置容器中的内核参数
+        - net.core.somaxconn=1024
+      #  - vm.overcommit_memory=1
+      volumes:
+        - ./redis.conf:/etc/redis/config/redis.conf
+       # - ./data:/data
+        #- ./log:/log
+      # 在容器中执行的命令
+      command: redis-server /etc/redis/config/redis.conf
+      privileged: true # 使用该参数，container内的root拥有真正的root权限。否则，container内的root只是外部的一个普通用户权限
+      networks:
+        - redis_network
+networks:
+  redis_network:
+    driver: bridge

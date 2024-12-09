@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  kkfileview-http:
+    image: model.vnet.com/sjhl/kkfileview:4.1.0
+    container_name: kkfileview-http
+    restart: always
+#    network_mode: host
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime
+      - ./application.properties:/opt/kkFileView-4.1.0/config/application.properties
+    networks:
+      - kkfileview_network_http
+    ports:
+      - "8015:8012" # http
+networks:
+  kkfileview_network_http:
+    driver: bridge
+
+
