@@ -1,0 +1,15 @@
+http:
+  host: "0.0.0.0"
+xpack:
+  monitoring:
+    enabled: true
+    elasticsearch:
+      hosts:
+        - https://10.20.201.212:9200
+        - https://10.20.201.212:9201
+        - https://10.20.201.212:9202
+      username: "elastic"
+      password: "pass12345"
+      ssl:
+        certificate_authority: "/usr/share/logstash/ca.crt"
+        verification_mode: "full"
