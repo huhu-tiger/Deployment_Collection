@@ -1,0 +1,9 @@
+apiVersion: 1
+providers:
+  - name: 'default'
+    folder: ''           # 将仪表盘放在默认文件夹下，也可以指定其他文件夹
+    type: file
+    disableDeletion: false
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
