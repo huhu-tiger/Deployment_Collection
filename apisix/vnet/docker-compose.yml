@@ -1,0 +1,65 @@
+version: "3.8"
+services:
+  apisix-dashboard:
+    image: model.vnet.com/sjhl/apisix-dashboard:3.0.1-alpine
+    restart: always
+    environment:
+      - LANG=zh_CN.UTF-8
+      - LC_ALL=zh_CN.UTF-8
+      - TZ=Asia/Shanghai
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime
+      - ./dashboard/conf.yaml:/usr/local/apisix-dashboard/conf/conf.yaml
+        #ports:
+        # - "9000:9000"                        #默认管理端口
+    network_mode: host
+      #networks:
+      #apisix:
+  apisix:
+    image: model.vnet.com/sjhl/apisix:3.8.0-debian
+    restart: always
+    environment:
+      - LANG=zh_CN.UTF-8
+      - LC_ALL=zh_CN.UTF-8
+      - TZ=Asia/Shanghai
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime
+      - ./apisix/conf.yaml:/usr/local/apisix/conf/config.yaml:ro
+      - ./apisix/debug.yaml:/usr/local/apisix/conf/debug.yaml:ro
+    depends_on:
+      - etcd
+    network_mode: host
+      #ports:
+      #  - "9180:9180/tcp"
+      #- "9080:9080/tcp"
+      #- "9091:9091/tcp"
+      #- "9443:9443/tcp"
+      #- "9092:9092/tcp"
+      #- "8080:8080/tcp"                    #开启apisix 80 443端口映射
+      #- "80:80/tcp"                    #开启apisix 80 443端口映射
+      #- "8443:8443/tcp"
+      #- "443:443/tcp"
+      #networks:
+      # apisix:
+  etcd:
+    image: model.vnet.com/sjhl/etcd:3.4.15
+    restart: always
+    volumes:
+      - etcd_data:/bitnami/etcd
+    environment:
+      ETCD_ENABLE_V2: "true"
+      ALLOW_NONE_AUTHENTICATION: "yes"
+      ETCD_ADVERTISE_CLIENT_URLS: "http://172.17.0.1:2379"
+      ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:2379"
+        #ports:
+        #- "2379:2379/tcp"
+    network_mode: host
+        #networks:
+        #  apisix:
+#这里删除web-01 web-02 prometheus grafana相关镜像
+networks:
+  apisix:
+    driver: bridge
+volumes:
+  etcd_data:
+    driver: local
