@@ -1,0 +1,82 @@
+{
+  "uid": "app-endpoint-monitor",
+  "title": "App and Endpoint Monitoring",
+  "tags": ["Prometheus", "Request Monitoring"],
+  "timezone": "browser",
+  "schemaVersion": 30,
+  "version": 1,
+  "refresh": "10s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Total Request Count",
+      "targets": [
+        {
+          "expr": "sum(rate(request_count_total{app=\"$app\", endpoint=\"$endpoint\"}[5m]))",
+          "legendFormat": "{{method}} {{http_status}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "options": { "reduceOptions": { "values": false } }
+    },
+    {
+      "type": "graph",
+      "title": "Request Count Over Time",
+      "targets": [
+        {
+          "expr": "sum(rate(request_count_total{app=\"$app\", endpoint=\"$endpoint\"}[1m])) by (method, http_status)",
+          "legendFormat": "{{method}} {{http_status}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 6, "y": 0, "w": 12, "h": 8 }
+    },
+    {
+      "type": "graph",
+      "title": "95th Percentile Request Latency",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(request_latency_bucket{app=\"$app\", endpoint=\"$endpoint\"}[5m])) by (le))",
+          "legendFormat": "p95",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 }
+    },
+    {
+      "type": "heatmap",
+      "title": "Request Latency Histogram",
+      "targets": [
+        {
+          "expr": "sum(rate(request_latency_bucket{app=\"$app\", endpoint=\"$endpoint\"}[5m])) by (le)",
+          "legendFormat": "Latency",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 }
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "type": "query",
+        "name": "app",
+        "label": "Application",
+        "datasource": "Prometheus",
+        "query": "label_values(request_count_total, app)",
+        "multi": false,
+        "includeAll": false
+      },
+      {
+        "type": "query",
+        "name": "endpoint",
+        "label": "Endpoint",
+        "datasource": "Prometheus",
+        "query": "label_values(request_count_total{app=\"$app\"}, endpoint)",
+        "multi": false,
+        "includeAll": false
+      }
+    ]
+  }
+}
