@@ -1,5 +1,6 @@
 ```
-mkdir grafana_data prometheus_data && chmod 777 grafana_data prometheus_data
+[ ! -d grafana_data ] && mkdir grafana_data; [ ! -d prometheus_data ] && mkdir prometheus_data; chmod 777 grafana_data prometheus_data
+
 ```
 
 # 热更新配置文件
