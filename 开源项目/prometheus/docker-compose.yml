@@ -7,7 +7,7 @@ services:
       - TZ=Asia/Shanghai
     volumes:
 #      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus:/etc/prometheus
       # 将宿主机的 prometheus_data 目录挂载到 /prometheus
       - ./prometheus_data:/prometheus
     command:

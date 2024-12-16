@@ -1,10 +1,11 @@
 global:
   scrape_interval: 30s
+  evaluation_interval: 15s #表示 Prometheus 每 15 秒重新评估一次规则中的表达式
 
 scrape_configs:
   - job_name: 'node_exporter'
     static_configs:
       - targets: ['node-exporter:9100']
-  - job_name: 'my_custom_target'
+  - job_name: 'fastapis_coreserver_target'
     static_configs:
       - targets: ['172.22.220.21:8020']
