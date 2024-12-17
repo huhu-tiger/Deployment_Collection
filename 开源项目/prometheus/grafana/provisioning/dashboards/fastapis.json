@@ -1,7 +1,7 @@
 {
   "uid": "app-endpoint-monitor",
-  "title": "App and Endpoint Monitoring",
-  "tags": ["Prometheus", "Request Monitoring"],
+  "title": "应用和端点监控",
+  "tags": ["Prometheus", "请求监控"],
   "timezone": "browser",
   "schemaVersion": 30,
   "version": 1,
@@ -9,7 +9,7 @@
   "panels": [
     {
       "type": "stat",
-      "title": "Total Request Count",
+      "title": "总请求数",
       "targets": [
         {
           "expr": "sum(rate(request_count_total{app=\"$app\", endpoint=\"$endpoint\"}[5m]))",
@@ -22,7 +22,7 @@
     },
     {
       "type": "graph",
-      "title": "Request Count Over Time",
+      "title": "请求数随时间变化",
       "targets": [
         {
           "expr": "sum(rate(request_count_total{app=\"$app\", endpoint=\"$endpoint\"}[1m])) by (method, http_status)",
@@ -34,7 +34,7 @@
     },
     {
       "type": "graph",
-      "title": "95th Percentile Request Latency",
+      "title": "95分位请求延迟",
       "targets": [
         {
           "expr": "histogram_quantile(0.95, sum(rate(request_latency_bucket{app=\"$app\", endpoint=\"$endpoint\"}[5m])) by (le))",
@@ -46,11 +46,11 @@
     },
     {
       "type": "heatmap",
-      "title": "Request Latency Histogram",
+      "title": "请求延迟直方图",
       "targets": [
         {
           "expr": "sum(rate(request_latency_bucket{app=\"$app\", endpoint=\"$endpoint\"}[5m])) by (le)",
-          "legendFormat": "Latency",
+          "legendFormat": "延迟",
           "refId": "A"
         }
       ],
@@ -62,7 +62,7 @@
       {
         "type": "query",
         "name": "app",
-        "label": "Application",
+        "label": "应用",
         "datasource": "Prometheus",
         "query": "label_values(request_count_total, app)",
         "multi": false,
@@ -71,7 +71,7 @@
       {
         "type": "query",
         "name": "endpoint",
-        "label": "Endpoint",
+        "label": "端点",
         "datasource": "Prometheus",
         "query": "label_values(request_count_total{app=\"$app\"}, endpoint)",
         "multi": false,
