@@ -1,0 +1,17 @@
+{
+	"ulid": "01JF68TA9BF40BV67W74Q0D0FZ",
+	"minTime": 1734292810736,
+	"maxTime": 1734300000000,
+	"stats": {
+		"numSamples": 299520,
+		"numSeries": 1248,
+		"numChunks": 2496
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01JF68TA9BF40BV67W74Q0D0FZ"
+		]
+	},
+	"version": 1
+}

@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   prometheus:
-    image: prom/prometheus:v2.44.0       # 使用明确版本tag
+    image: model.vnet.com/zhongzi/prometheus:v2.44.0     # 使用明确版本tag
     container_name: prometheus
     environment:
       - TZ=Asia/Shanghai
@@ -27,7 +27,7 @@ services:
       - monitoring
 
   node-exporter:
-    image: prom/node-exporter:v1.6.1
+    image: model.vnet.com/zhongzi/node-exporter:v1.6.1
     container_name: node-exporter
     restart: unless-stopped
     command:
@@ -45,7 +45,7 @@ services:
       - monitoring
 
   grafana:
-    image: grafana/grafana:10.1.0        # 使用明确版本tag（Grafana 10.x稳定版本）
+    image: model.vnet.com/zhongzi/grafana:10.1.0      # 使用明确版本tag（Grafana 10.x稳定版本）
     container_name: grafana
     depends_on:
       - prometheus

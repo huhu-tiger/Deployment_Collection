@@ -3,7 +3,7 @@ providers:
   - name: 'default'
     folder: ''           # 将仪表盘放在默认文件夹下，也可以指定其他文件夹
     type: file
-    disableDeletion: false #disableDeletion: false
-    allowUiUpdates: true # allowUiUpdates: true，允许手动编辑和删除仪表板，方便调试和测试。
+    disableDeletion: false
+    allowUiUpdates: true
     options:
       path: /etc/grafana/provisioning/dashboards
