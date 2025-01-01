@@ -1,0 +1,64 @@
+version: "3.7"
+
+services:
+   logstash:
+      #image: docker.elastic.co/logstash/logstash-oss:8.17.0
+      image: model.vnet.com/zhongzi/logstash-oss:8.16.2
+      container_name: logstash
+      volumes:
+        #- ./logstash_single.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+        - ./logstash_multiple.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+        - ./logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      ports:
+        - "12201:12201/udp"
+      extra_hosts:
+        - "host.docker.internal:host-gateway" # docker version => 20.10
+      networks:
+        - log_network
+   test_log_container:
+      image: docker.m.daocloud.io/ubuntu:latest
+      container_name: test_log
+      entrypoint:
+        - bash
+        - -c
+        - >
+          while true;
+          do
+            echo "this is a long long log string.....";
+            a=`date +"%Y-%m-%d %H:%M.%S"`;
+            host_ip=$(getent hosts host.docker.internal | awk '{ print $1 }');
+            echo "{\"timestamp\":\"$${a}\", \"component\": \"test_container\", \"log\": \"INFO $${a}: json format log.....\", \"host_ip\": \"$${host_ip}\"}";
+            sleep 15;
+          done
+      networks:
+        - log_network
+      depends_on:
+        - logstash
+      logging:
+        driver: gelf
+        options:
+          gelf-address: "udp://localhost:12201"  # Use host address
+          tag: '{{.Name}}'
+          mode: non-blocking
+          max-buffer-size: 4m
+      extra_hosts:
+        - "host.docker.internal:host-gateway"  # Maps host's IP for the container
+
+   test_http:
+      image: jmalloc/echo-server:latest
+      container_name: test_http
+      ports:
+        - "8080:8080/tcp"
+      environment:
+        LOG_HTTP_BODY: "true"
+        LOG_HTTP_HEADERS: "true"
+      logging:
+        driver: json-file
+        options:
+          max-size: "10m"
+          max-file: "3"
+
+networks:
+  log_network:
+      driver: bridge
+

@@ -1,0 +1,22 @@
+# Logstash Settings
+
+# API HTTP 设置
+api.http.host: "0.0.0.0"
+
+# Pipeline 缓冲类型设置
+pipeline.buffer.type: heap
+# 其他配置项...
+# 当 pipeline.ordered 启用时，Logstash 需要额外的资源来确保事件顺序，这会限制并行处理的能力，降低吞吐量。禁用后，Logstash 可以更自由地并行处理事件，从而提高数据处理的效率。
+pipeline.ordered: false
+
+# 其他配置项...
+
+# Pipeline workers 设置
+pipeline.workers: 4
+
+# 其他可能的设置...
+# path.config: /etc/logstash/conf.d/*.conf
+# path.data: /var/lib/logstash
+# path.logs: /var/log/logstash
+# 日志级别设置（调试模式）
+log.level: debug

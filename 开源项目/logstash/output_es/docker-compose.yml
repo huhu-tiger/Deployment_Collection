@@ -1,0 +1,22 @@
+version: "3.7"
+
+services:
+   logstash:
+      #image: docker.elastic.co/logstash/logstash-oss:8.10.2
+      image: model.vnet.com/zhongzi/logstash:8.10.2
+      container_name: logstash
+      volumes:
+        - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+        - ./ca.crt:/usr/share/logstash/ca.crt:ro
+        - ./logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      ports:
+        - "12201:12201/udp"
+#      environment:
+#        - LOGSTASH_MONITORING_ELASTICSEARCH_HOSTS=https://10.20.201.212:9200
+#        - LOGSTASH_HTTP_HOST=0.0.0.0
+      networks:
+        - log_network
+
+networks:
+  log_network:
+      driver: bridge
