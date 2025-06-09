@@ -1,8 +1,8 @@
 apisix:
   node_listen:
-    - 9080
-    - 8080                 #apisix默认http监听端口,我这里写了2个，支持9080和80同时访问
-      #   - 80
+    # - 9080
+    # - 8080                 #apisix默认http监听端口,我这里写了2个，支持9080和80同时访问
+    - 8016
   ssl:                   #添加ssl模块，开启https
     enable: true
     listen:
@@ -41,4 +41,4 @@ plugin_attr:                        #prometheus相关配置，这里可以先默
   prometheus:
     export_addr:
       ip: "0.0.0.0"
-      port: 9091
+      port: 9191

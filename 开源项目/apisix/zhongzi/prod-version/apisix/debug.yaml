@@ -1,0 +1,19 @@
+basic:
+  enable: true
+hook_conf:
+  enable: true # 是否开启 hook 追踪调试
+  name: hook_phase # 开启 hook 追踪调试的模块列表名称
+  log_level: warn # 日志级别
+  is_print_input_args: true # 是否打印输入参数
+  is_print_return_value: true # 是否打印返回值
+
+hook_phase: # 模块函数列表，名字：hook_phase
+  apisix: # 引用的模块名称
+    - http_access_phase # 函数名：数组
+    - http_header_filter_phase
+    - http_body_filter_phase
+    - http_log_phase
+http_filter:
+  enable: true # Enable/Disable Advanced Debug Mode Dynamically
+  enable_header_name: X-APISIX-Dynamic-Debug # Trace for the request with this header
+#END

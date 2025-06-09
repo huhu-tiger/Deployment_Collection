@@ -1,0 +1,44 @@
+apisix:
+  node_listen:
+    # - 9080
+    # - 8080                 #apisix默认http监听端口,我这里写了2个，支持9080和80同时访问
+    - 8016
+  ssl:                   #添加ssl模块，开启https
+    enable: true
+    listen:
+      #- port: 443       #https默认端口
+      - port: 8443      #这里9443可以删除，只保留443为默认端口
+  enable_ipv6: false
+  enable_control: true    #管理端口及相关dashboard 端口号
+  control:
+    ip: "0.0.0.0"
+    port: 9092
+  stream_proxy: # TCP/UDP proxy
+    tcp: # TCP proxy address list
+      - 9100
+      - "127.0.0.1:9101"
+    udp: # UDP proxy address list
+      - 9200
+      - "127.0.0.1:9211"
+  proxy_mode: http&stream
+deployment:
+  admin:
+    allow_admin:               # https://nginx.org/en/docs/http/ngx_http_access_module.html#allow
+      - 0.0.0.0/0              # #admin用户可以执行key的网段.
+    admin_key:
+      - name: "admin"
+        key: edaacccc3vvvv3bbb5f136f87ad84b625c8f1      #admin用户key，记得修改，生产不要用默认
+        role: admin                 # admin: manage all configuration data
+      - name: "viewer"
+        key: 4054f7cf07e344346cd3f287985e76a2
+        role: viewer
+  etcd:                             # etcd连接地址，如果不使用docker部署，可以修改其它ip
+    host:                           # it's possible to define multiple etcd hosts addresses of the same etcd cluster.
+      - "http://172.30.0.1:2379"          # 这里的etcd也可以改成宿主机ip
+    prefix: "/apisix"               # apisix configurations prefix
+    timeout: 30                     # 30 seconds
+plugin_attr:                        #prometheus相关配置，这里可以先默认，后续监控在添加
+  prometheus:
+    export_addr:
+      ip: "0.0.0.0"
+      port: 9091

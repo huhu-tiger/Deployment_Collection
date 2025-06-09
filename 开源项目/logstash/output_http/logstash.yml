@@ -12,7 +12,7 @@ pipeline.ordered: false
 # 其他配置项...
 
 # Pipeline workers 设置
-pipeline.workers: 4
+pipeline.workers: 1
 
 # 其他可能的设置...
 # path.config: /etc/logstash/conf.d/*.conf

@@ -1,0 +1,53 @@
+version: "3.8"
+services:
+
+  namesrv:
+    #image: apache/rocketmq:${ROCKETMQ_VERSION}\
+    image: model.vnet.com/zhongzi/rocketmq:${ROCKETMQ_VERSION}
+    hostname: namesrv
+    container_name: rocketmq-namesrv
+    ports:
+      - 9876:9876
+    volumes:
+      - ./data/namesrv/logs:/home/rocketmq/logs
+    command: sh mqnamesrv
+    restart: on-failure
+    networks:
+      - network
+
+  broker:
+    #image: apache/rocketmq:${ROCKETMQ_VERSION}
+    image: model.vnet.com/zhongzi/rocketmq:${ROCKETMQ_VERSION}
+    hostname: broker
+    container_name: rocketmq-broker
+    ports:
+      - 10909:10909
+      - 10911:10911
+      - 10912:10912
+    volumes:
+      - ./data/broker/logs:/home/rocketmq/logs
+      - ./data/broker/store:/home/rocketmq/store
+      - ./data/broker/conf/broker.conf:/home/rocketmq/conf/broker.conf
+    command: sh mqbroker -n namesrv:9876 -c /home/rocketmq/conf/broker.conf
+    restart: on-failure
+    networks:
+      - network
+    depends_on:
+      - namesrv
+
+  dashboard:
+    #image: apacherocketmq/rocketmq-dashboard:${ROCKETMQ_DASHBOARD_VERSION}
+    image: model.vnet.com/zhongzi/rocketmq-dashboard:2.0.0
+    container_name: rocketmq-dashboard
+    hostname: dashboard
+    ports:
+      - 8086:8080
+    environment:
+      - JAVA_OPTS=-Drocketmq.namesrv.addr=10.20.201.212:9876
+    restart: on-failure
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge

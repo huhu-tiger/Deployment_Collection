@@ -3,7 +3,8 @@ version: "3.7"
 services:
    logstash:
       #image: docker.elastic.co/logstash/logstash-oss:8.17.0
-      image: model.vnet.com/zhongzi/logstash-oss:8.16.2
+#      image: model.vnet.com/zhongzi/logstash-oss:8.16.2
+      image: aa:aa
       container_name: logstash
       volumes:
         #- ./logstash_single.conf:/usr/share/logstash/pipeline/logstash.conf:ro
@@ -28,7 +29,8 @@ services:
             a=`date +"%Y-%m-%d %H:%M.%S"`;
             host_ip=$(getent hosts host.docker.internal | awk '{ print $1 }');
             echo "{\"timestamp\":\"$${a}\", \"component\": \"test_container\", \"log\": \"INFO $${a}: json format log.....\", \"host_ip\": \"$${host_ip}\"}";
-            sleep 15;
+            echo "=support-log-login={\"timestamp\":\"$${a}\", \"component\": \"test_container\", \"log\": \"INFO $${a}: json format log.....\", \"host_ip\": \"$${host_ip}\"}=support-log-login=";
+            sleep 5;
           done
       networks:
         - log_network
@@ -37,10 +39,13 @@ services:
       logging:
         driver: gelf
         options:
-          gelf-address: "udp://localhost:12201"  # Use host address
+          gelf-address: "udp://127.0.0.1:12201"  # Use host address
           tag: '{{.Name}}'
-          mode: non-blocking
-          max-buffer-size: 4m
+          mode: "non-blocking"
+          max-buffer-size: "1k"              # 设置一个非常小的 buffer（比如 1k）
+          #max-buffer-messages: "1"           # 每次推送 1 条（消息）
+          env: "FOO,BAR"                     # 可选：附带一些容器环境变量
+          labels: "com.docker.compose.service"  # 可选：附带标签信息
       extra_hosts:
         - "host.docker.internal:host-gateway"  # Maps host's IP for the container
 

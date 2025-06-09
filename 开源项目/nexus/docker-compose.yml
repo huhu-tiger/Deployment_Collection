@@ -1,0 +1,12 @@
+version: "3.3"
+services:
+  nexus:
+    image: model.vnet.com/zhongzi/nexus3:3.80.0-java17-alpine
+    container_name: nexus3
+    restart: always
+    environment:
+      - TZ=Asia/Shanghai
+    ports:
+      - 8081:8081
+    volumes:
+      - ./data:/nexus-data

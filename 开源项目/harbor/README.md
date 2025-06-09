@@ -108,3 +108,14 @@ docker push 192.168.33.85/zhongzi/nginx:stable-alpine3.17-perl
 docker pull 192.168.33.85/zhongzi/nginx:stable-alpine3.17-perl
 ```
 
+## 停止harbor服务
+```shell
+docker compose down -v
+```
+
+## 启动harbor服务
+```shell
+docker compose up -d
+```
+
+相关链接地址：https://goharbor.io/docs/2.12.0/install-config/run-installer-script/

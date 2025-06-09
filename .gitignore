@@ -10,3 +10,12 @@ __pycache__/
 **/*.model
 standalone-logs
 *.zip
+开源项目/redis_cluster/data/7000/appendonly.aof
+开源项目/redis_cluster/data/7000/dump.rdb
+开源项目/redis_cluster/data/7000/nodes.conf
+开源项目/redis_cluster/data/7001/appendonly.aof
+开源项目/redis_cluster/data/7001/dump.rdb
+开源项目/redis_cluster/data/7001/nodes.conf
+开源项目/redis_cluster/data/7002/appendonly.aof
+开源项目/redis_cluster/data/7002/dump.rdb
+开源项目/redis_cluster/data/7002/nodes.conf
