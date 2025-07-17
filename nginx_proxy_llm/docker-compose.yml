@@ -9,7 +9,9 @@ services:
       - 57886:57886
       - 57887:57887
       - 57888:57888
-
+    environment:
+      - LANG=en_US.UTF-8
+      - LC_ALL=en_US.UTF-8
     networks:
       - nginx_proxy_server_network
     volumes:
