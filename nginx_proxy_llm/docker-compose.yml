@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   nginx_proxy_server:
     container_name: nginx_proxy_server
@@ -12,11 +13,17 @@ services:
     environment:
       - LANG=en_US.UTF-8
       - LC_ALL=en_US.UTF-8
+    logging:
+      driver: "json-file" # /media/dockerData/data/containers/$containserid/$containserid.log
+      options:
+        max-size: "20m"
+        max-file: "5"
     networks:
       - nginx_proxy_server_network
     volumes:
       - ./config/nginx.conf:/etc/nginx/nginx.conf
       - ./config/conf.d:/etc/nginx/conf.d
+      - ./mime.types:/etc/nginx/mime.types
       - ./logs:/var/log/nginx
 networks:
   nginx_proxy_server_network:
