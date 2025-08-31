@@ -35,6 +35,8 @@ services:
       - postgres-network
     ports:
       - "65432:5432" 
+volumes:
+  app-db-data:
 networks:
   postgres-network:
     external: false
