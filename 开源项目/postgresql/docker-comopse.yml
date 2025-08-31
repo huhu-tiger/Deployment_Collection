@@ -37,4 +37,4 @@ services:
       - "65432:5432" 
 networks:
   postgres-network:
-    driver: bridge 
+    external: false
