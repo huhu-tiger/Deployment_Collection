@@ -1,0 +1,40 @@
+services:
+
+  db:
+    image: postgres:17
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    volumes:
+      - app-db-data:/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - POSTGRES_USER=${POSTGRES_USER?Variable not set}
+      - POSTGRES_DB=${POSTGRES_DB?Variable not set}
+      - TZ=Asia/Shanghai
+      - PGTZ=Asia/Shanghai
+      - POSTGRES_INITDB_ARGS=--locale=zh_CN.UTF-8
+    command: >
+      postgres
+      -c listen_addresses='*'
+      -c timezone='Asia/Shanghai'
+      -c log_timezone='Asia/Shanghai'
+      -c datestyle='iso, dmy'
+      -c lc_messages='zh_CN.UTF-8'
+      -c lc_monetary='zh_CN.UTF-8'
+      -c lc_numeric='zh_CN.UTF-8'
+      -c lc_time='zh_CN.UTF-8'
+    networks:
+      - postgres-network
+    ports:
+      - "65432:5432" 
+networks:
+  postgres-network:
+    driver: bridge 
