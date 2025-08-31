@@ -13,11 +13,11 @@ services:
       - app-db-data:/var/lib/postgresql/data/pgdata
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
-      - POSTGRES_PASSWORD=postgres123
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=postgres
-      - TZ=Asia/Shanghai
-      - PGTZ=Asia/Shanghai
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres123}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-app}
+      - TZ=${TZ:-Asia/Shanghai}
+      - PGTZ=${PGTZ:-Asia/Shanghai}
       # - POSTGRES_INITDB_ARGS=--icu-locale=zh-CN
     command: >
       postgres
