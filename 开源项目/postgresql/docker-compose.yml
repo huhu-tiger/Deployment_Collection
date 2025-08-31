@@ -11,6 +11,8 @@ services:
       timeout: 10s
     volumes:
       - app-db-data:/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres123}
@@ -32,7 +34,7 @@ services:
     networks:
       - postgres-network
     ports:
-      - "65432:5432"
+      - "${POSTGRES_PORT:-65432}:5432"
 volumes:
   app-db-data:
 networks:
