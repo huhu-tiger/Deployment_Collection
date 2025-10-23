@@ -95,7 +95,8 @@ services:
 
   es02:
     depends_on:
-      - es01
+      es01:
+        condition: service_healthy
     #image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     image:  model.vnet.com/zhongzi/elasticsearch:${STACK_VERSION}
     ports:
@@ -142,7 +143,8 @@ services:
 
   es03:
     depends_on:
-      - es02
+      es02:
+        condition: service_healthy
     #image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     image:  model.vnet.com/zhongzi/elasticsearch:${STACK_VERSION}
     ports:

@@ -32,12 +32,14 @@ docker-compose -f docker-compose.yml up -d
 https://10.20.201.212:9200/_cat/nodes?v
 https://10.20.201.212:9200/_cat/nodes?v
 https://10.20.201.212:9200/_cat/nodes?v
+
+elastic/Elastic!2025
 ```
 
 
 #kibana login
 ```
-elastic/pass12345
+elastic/Elastic!2025
 ```
 
 #kibana 中的devTools菜单
