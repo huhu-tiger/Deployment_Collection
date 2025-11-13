@@ -1,0 +1,5 @@
+name: agnet-space-middleware
+
+networks:
+  agnet-space-middleware:
+    driver: bridge

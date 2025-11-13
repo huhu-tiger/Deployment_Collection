@@ -1,0 +1,96 @@
+services:
+  comfyui_gpu0:
+    container_name: comfyui-0
+    profiles: [app,comfyui,gpu,gpu0]
+    image: ${COMFYUI_AI_IMAGE}
+    ports:
+      - "8188"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent --show-error --max-time 5 http://127.0.0.1:8188/queue >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    volumes:
+      - "./storage:/root"
+      - "/media/source/comfyui_docker/user-scripts:/root/user-scripts"
+      - "/media/llm/lightx2v/models:/root/ComfyUI/models"
+      - "/media/llm/lightx2v/models/hf-hub:/root/.cache/huggingface/hub"
+      - "/media/llm/lightx2v/models/torch-hub:/root/.cache/torch/hub"
+      - "/media/source/comfyui_docker/gpu0/input:/root/ComfyUI/input"
+      - "/media/source/comfyui_docker/gpu0/output:/root/ComfyUI/output"
+      - "/media/source/comfyui_docker/workflows:/root/ComfyUI/user/default/workflows"
+      - /etc/timezone:/etc/timezone
+      - /etc/localtime:/etc/localtime
+      - ./extends:/root/extends
+      - /root/.cache/pip:/root/.cache/pip # pip cache
+      - ./data/python_libs:/data/python_libs # custom_nodes pip install dir
+    env_file: 
+      - ./.env
+    environment:
+      - Role=master
+      - CLI_ARGS= --disable-smart-memory --enable-cors-header '*' --user-directory=/root/ComfyUI/user
+      - HTTP_PROXY=http://192.168.0.2:20171
+      - HTTPS_PROXY=http://192.168.0.2:20171
+      - NO_PROXY=localhost,127.0.0.1,192.168.0.2,192.168.0.3,39.155.179.5,comfyui_gpu0,comfyui_gpu1
+    networks:
+      - comfyui-vnet
+    cap_add:
+      - SYS_NICE
+      - SYS_RESOURCE
+      - SYS_PTRACE
+    security_opt:
+      - seccomp=unconfined
+      - "label=type:nvidia_container_t"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [gpu]
+
+  comfyui_gpu1:
+    container_name: comfyui-1
+    profiles: [app,comfyui,gpu,gpu1]
+    image: ${COMFYUI_AI_IMAGE}
+    ports:
+      - "8188"
+    depends_on:
+      comfyui_gpu0:
+        condition: service_healthy
+
+    volumes:
+      - "./storage:/root"
+      - "/media/source/comfyui_docker/user-scripts:/root/user-scripts"
+      - "/media/llm/lightx2v/models:/root/ComfyUI/models"
+      - "/media/llm/lightx2v/models/hf-hub:/root/.cache/huggingface/hub"
+      - "/media/llm/lightx2v/models/torch-hub:/root/.cache/torch/hub"
+      - "/media/source/comfyui_docker/gpu1/input:/root/ComfyUI/input"
+      - "/media/source/comfyui_docker/gpu1/output:/root/ComfyUI/output"
+      - "/media/llm/lightx2v/models/custom_nodes:/root/ComfyUI/models/custom_nodes"
+      - "/media/source/comfyui_docker/workflows:/root/ComfyUI/user/default/workflows"
+      - /etc/timezone:/etc/timezone
+      - /etc/localtime:/etc/localtime
+      - /root/.cache/pip:/root/.cache/pip
+      - ./data/python_libs:/data/python_libs
+    env_file: 
+      - ./.env
+
+    cap_add:
+      - SYS_NICE
+      - SYS_RESOURCE
+      - SYS_PTRACE
+    security_opt:
+      - seccomp=unconfined
+      - "label=type:nvidia_container_t"
+    networks:
+      - comfyui-vnet
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['1']
+              capabilities: [gpu]

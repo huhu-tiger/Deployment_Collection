@@ -1,0 +1,5 @@
+name: comfyui-docker
+
+networks:
+  comfyui-vnet:
+    driver: bridge

@@ -1,0 +1,19 @@
+services:
+  comfyui-app-nginx:
+    container_name: comfyui-app-nginx
+    profiles: [app, lb, nginx]
+    image: ${NGINX_AI_IMAGE}
+    restart: always
+    ports:
+      - 80:80
+      - 81:81
+      - 8180:8180
+      - 8181:8181
+
+    networks:
+      - comfyui-vnet
+    volumes:
+      #- ./init/hosts:/etc/hosts
+      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+      - ./logs/nginx:/var/log/nginx

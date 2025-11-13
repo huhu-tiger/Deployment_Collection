@@ -1,0 +1,116 @@
+services:
+  agent-space-mysql:
+    container_name: agent-space-mysql
+    profiles: [app, middleware, mysql]
+    image: ${AGENT_SPACE_MYSQL_IMAGE}
+    restart: always
+    ports:
+      - 3306:3306
+    networks:
+      - agnet-space-middleware
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_AUTH_PLUGIN: mysql_native_password
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+      - ./config/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./scripts/mysql_healthcheck.sh:/usr/local/bin/mysql_healthcheck.sh:ro
+      - /etc/timezone:/etc/timezone
+      - /etc/localtime:/etc/localtime
+    healthcheck:
+      test: ["CMD", "sh", "/usr/local/bin/mysql_healthcheck.sh"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 30s
+
+  agent-space-mysql-init:
+    container_name: agent-space-mysql-init
+    profiles: [app, middleware, mysql, nacos]
+    image:  ${AGENT_SPACE_MYSQL_IMAGE}
+    depends_on:
+      agent-space-mysql:
+        condition: service_healthy
+    networks:
+      - agnet-space-middleware
+    env_file:
+      - ./.env
+    environment:
+      - MYSQL_HOST=agent-space-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - DB_NAME=nacos_config
+      - SCHEMA_FILE=/mysql-schema.sql
+    volumes:
+      - ./scripts/init_mysql.sh:/init_mysql.sh:ro
+      - ./config/mysql/mysql-schema.sql:/mysql-schema.sql:ro
+    command: 
+      - sh
+      - /init_mysql.sh
+    restart: "no"
+
+
+  
+  agent-space-nacos-mysql:
+    container_name: agent-space-nacos-mysql
+    profiles: [app, middleware, nacos]
+    image: ${AGENT_SPACE_NACOS_IMAGE}
+    restart: always
+    depends_on:
+      agent-space-mysql:
+        condition: service_healthy
+      agent-space-mysql-init:
+        condition: service_completed_successfully
+    ports:
+      - 7848:7848
+      - 8848:8848
+      - 9848:9848
+      - 9849:9849
+    networks:
+      - agnet-space-middleware
+    environment:
+      - MODE=standalone
+      - SPRING_DATASOURCE_PLATFORM=mysql
+      - MYSQL_SERVICE_HOST=agent-space-mysql
+      - MYSQL_SERVICE_PORT=3306
+      - MYSQL_SERVICE_DB_NAME=nacos_config
+      - MYSQL_SERVICE_USER=root
+      - MYSQL_SERVICE_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_SERVICE_DB_PARAM=characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+      - JVM_XMS=1g
+      - JVM_XMX=2g
+      - NACOS_AUTH_ENABLE=true
+      - NACOS_AUTH_TOKEN=${NACOS_AUTH_TOKEN}
+      - NACOS_AUTH_IDENTITY_KEY=${NACOS_AUTH_IDENTITY_KEY}
+      - NACOS_AUTH_IDENTITY_VALUE=${NACOS_AUTH_IDENTITY_VALUE}
+    volumes:
+      - ./logs/nacos:/home/nacos/logs
+      - ./data/nacos:/home/nacos/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8848/nacos"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 30s
+
+  agent-space-nacos-init:
+    container_name: agent-space-nacos-init
+    profiles: [app, middleware, nacos]
+    image: ${AGENT_SPACE_INIT_IMAGE}
+    depends_on:
+      agent-space-nacos-mysql:
+        condition: service_healthy
+    networks:
+      - agnet-space-middleware
+    env_file:
+      - ./.env
+    environment:
+      - NACOS_URL=http://agent-space-nacos-mysql:8848/nacos
+      - NACOS_PASSWORD=${NACOS_PASSWORD:-}
+    volumes:
+      - ./scripts/init_nacos.sh:/init_nacos.sh:ro
+    command:
+      - sh
+      - /init_nacos.sh
+    restart: "no"
